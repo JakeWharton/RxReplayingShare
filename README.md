@@ -1,7 +1,7 @@
 RxJava Replaying Share
 ======================
 
-`ReplayingShare` is an RxJava transformer which combines `replay(1)`, `publish()`, and `refCount()`
+`ReplayingShare` is a RxJava transformer which combines `replay(1)`, `publish()`, and `refCount()`
 operators.
 
 Unlike traditional combinations of these operators, `ReplayingShare` caches the last emitted
