@@ -102,7 +102,7 @@ public final class ReplayingShare<T>
       downstream.onSubscribe(d);
 
       T value = lastSeen.value;
-      if (value != null) {
+      if (value != null && !d.isDisposed()) {
         downstream.onNext(value);
       }
     }
@@ -139,6 +139,7 @@ public final class ReplayingShare<T>
     private final LastSeen<T> lastSeen;
 
     private Subscription subscription;
+    private volatile boolean cancelled;
     private boolean first = true;
 
     LastSeenSubscriber(Subscriber<? super T> downstream, LastSeen<T> lastSeen) {
@@ -158,7 +159,7 @@ public final class ReplayingShare<T>
         first = false;
 
         T value = lastSeen.value;
-        if (value != null) {
+        if (value != null && !cancelled) {
           downstream.onNext(value);
 
           if (amount != Long.MAX_VALUE && --amount == 0) {
@@ -170,6 +171,7 @@ public final class ReplayingShare<T>
     }
 
     @Override public void cancel() {
+      cancelled = true;
       subscription.cancel();
     }
 

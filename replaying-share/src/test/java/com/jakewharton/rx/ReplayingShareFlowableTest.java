@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
+import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import static org.junit.Assert.assertEquals;
@@ -241,5 +242,30 @@ public final class ReplayingShareFlowableTest {
     TestSubscriber<String> observer3 = new TestSubscriber<>();
     replayed.subscribe(observer3);
     observer3.assertValues("initB");
+  }
+
+  @Test public void unsubscribeInOnSubscribePreventsCacheEmission() {
+    PublishProcessor<String> upstream = PublishProcessor.create();
+    Flowable<String> replayed = upstream.compose(ReplayingShare.<String>instance());
+    replayed.subscribe();
+    upstream.onNext("something to cache");
+
+    TestSubscriber<String> testSubscriber = new TestSubscriber<>(new Subscriber<String>() {
+      @Override
+      public void onSubscribe(Subscription subscription) {
+        subscription.cancel();
+      }
+
+      @Override
+      public void onNext(String s) { }
+
+      @Override
+      public void onError(Throwable throwable) { }
+
+      @Override
+      public void onComplete() { }
+    });
+    replayed.subscribe(testSubscriber);
+    testSubscriber.assertNoValues();
   }
 }
