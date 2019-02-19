@@ -244,27 +244,14 @@ public final class ReplayingShareFlowableTest {
     observer3.assertValues("initB");
   }
 
-  @Test public void unsubscribeInOnSubscribePreventsCacheEmission() {
+  @Test public void unsubscribeBeforeSubscribePreventsCacheEmission() {
     PublishProcessor<String> upstream = PublishProcessor.create();
     Flowable<String> replayed = upstream.compose(ReplayingShare.<String>instance());
     replayed.subscribe();
     upstream.onNext("something to cache");
 
-    TestSubscriber<String> testSubscriber = new TestSubscriber<>(new Subscriber<String>() {
-      @Override
-      public void onSubscribe(Subscription subscription) {
-        subscription.cancel();
-      }
-
-      @Override
-      public void onNext(String s) { }
-
-      @Override
-      public void onError(Throwable throwable) { }
-
-      @Override
-      public void onComplete() { }
-    });
+    TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+    testSubscriber.cancel();
     replayed.subscribe(testSubscriber);
     testSubscriber.assertNoValues();
   }

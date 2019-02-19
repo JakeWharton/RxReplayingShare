@@ -247,27 +247,14 @@ public final class ReplayingShareObservableTest {
     observer3.assertValues("initB");
   }
 
-  @Test public void unsubscribeInOnSubscribePreventsCacheEmission() {
+  @Test public void unsubscribeBeforeSubscribePreventsCacheEmission() {
     PublishSubject<String> upstream = PublishSubject.create();
     Observable<String> replayed = upstream.compose(ReplayingShare.<String>instance());
     replayed.subscribe();
     upstream.onNext("something to cache");
 
-    TestObserver<String> testObserver = new TestObserver<>(new Observer<String>() {
-      @Override
-      public void onSubscribe(Disposable disposable) {
-        disposable.dispose();
-      }
-
-      @Override
-      public void onNext(String s) { }
-
-      @Override
-      public void onError(Throwable throwable) { }
-
-      @Override
-      public void onComplete() { }
-    });
+    TestObserver<String> testObserver = new TestObserver<>();
+    testObserver.dispose();
     replayed.subscribe(testObserver);
     testObserver.assertNoValues();
   }
