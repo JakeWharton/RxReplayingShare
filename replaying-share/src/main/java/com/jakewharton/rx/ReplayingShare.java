@@ -80,7 +80,7 @@ public final class ReplayingShare<T>
 
     LastSeen(T defaultValue) {
       this.defaultValue = defaultValue;
-      value = this.defaultValue;
+      value = defaultValue;
     }
 
     @Override public void onNext(T value) {
