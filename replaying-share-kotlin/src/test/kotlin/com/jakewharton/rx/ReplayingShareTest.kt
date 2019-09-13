@@ -30,4 +30,14 @@ class ReplayingShareTest {
     val o = Flowable.never<String>().replayingShare()
     assertNotNull(o)
   }
+
+  @Test fun observableExtensionMethodWorksWithDefaultValue() {
+    val strings = Observable.never<String>().replayingShare("default").test()
+    strings.assertValues("default")
+  }
+
+  @Test fun flowableExtensionMethodWorksWithDefaultValue() {
+    val strings = Flowable.never<String>().replayingShare("default").test()
+    strings.assertValues("default")
+  }
 }

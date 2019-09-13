@@ -35,7 +35,7 @@ import org.reactivestreams.Subscription;
  */
 public final class ReplayingShare<T>
     implements ObservableTransformer<T, T>, FlowableTransformer<T, T> {
-  private static final ReplayingShare<Object> INSTANCE = new ReplayingShare<>();
+  private static final ReplayingShare<Object> INSTANCE = new ReplayingShare<>(null);
 
   /** The singleton instance of this transformer. */
   @SuppressWarnings("unchecked") // Safe because of erasure.
@@ -43,32 +43,56 @@ public final class ReplayingShare<T>
     return (ReplayingShare<T>) INSTANCE;
   }
 
-  private ReplayingShare() {
+  /**
+   * Creates a `ReplayingShare` transformer with a default value which will be emitted downstream
+   * on subscription if there is not any cached value yet.
+   * @param defaultValue the initial value, cannot be null
+   * @throws NullPointerException if {@code defaultValue} is null
+   */
+  public static <T> ReplayingShare<T> createWithDefault(T defaultValue) {
+    if (defaultValue == null) throw new NullPointerException("defaultValue == null");
+    return new ReplayingShare<>(defaultValue);
+  }
+
+  private final T defaultValue;
+
+  /**
+   * Constructs a ReplayingShare with the given initial value.
+   * @param defaultValue the initial value
+   */
+  private ReplayingShare(T defaultValue) {
+    this.defaultValue = defaultValue;
   }
 
   @Override public Observable<T> apply(Observable<T> upstream) {
-    LastSeen<T> lastSeen = new LastSeen<>();
+    LastSeen<T> lastSeen = new LastSeen<>(defaultValue);
     return new LastSeenObservable<>(upstream.doOnEach(lastSeen).share(), lastSeen);
   }
 
   @Override public Flowable<T> apply(Flowable<T> upstream) {
-    LastSeen<T> lastSeen = new LastSeen<>();
+    LastSeen<T> lastSeen = new LastSeen<>(defaultValue);
     return new LastSeenFlowable<>(upstream.doOnEach(lastSeen).share(), lastSeen);
   }
 
   static final class LastSeen<T> implements Observer<T>, Subscriber<T> {
+    private final T defaultValue;
     volatile T value;
+
+    LastSeen(T defaultValue) {
+      this.defaultValue = defaultValue;
+      value = this.defaultValue;
+    }
 
     @Override public void onNext(T value) {
         this.value = value;
     }
 
     @Override public void onError(Throwable e) {
-      value = null;
+      value = defaultValue;
     }
 
     @Override public void onComplete() {
-      value = null;
+      value = defaultValue;
     }
 
     @Override public void onSubscribe(Subscription ignored) {}

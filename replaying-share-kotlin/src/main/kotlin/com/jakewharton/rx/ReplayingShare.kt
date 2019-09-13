@@ -25,8 +25,16 @@ import io.reactivex.Observable
  * value from the upstream observable *only* when one or more downstream observers are connected.
  * This allows expensive upstream observables to be shut down when no one is observing while also
  * replaying the last value seen by *any* observer to new ones.
+ *
+ * @param defaultValue the initial value to be cached
  */
-fun <T> Observable<T>.replayingShare(): Observable<T> = compose(ReplayingShare.instance<T>())
+@JvmOverloads
+fun <T> Observable<T>.replayingShare(defaultValue: T? = null): Observable<T> {
+  return compose(
+      if (defaultValue != null) ReplayingShare.createWithDefault(defaultValue)
+      else ReplayingShare.instance<T>()
+  )
+}
 
 /**
  * A transformer which combines `replay(1)`, `publish()`, and `refCount()` operators.
@@ -35,5 +43,13 @@ fun <T> Observable<T>.replayingShare(): Observable<T> = compose(ReplayingShare.i
  * value from the upstream flowable *only* when one or more downstream subscribers are connected.
  * This allows expensive upstream flowables to be shut down when no one is subscribed while also
  * replaying the last value seen by *any* subscriber to new ones.
+ *
+ * @param defaultValue the initial value to be cached
  */
-fun <T> Flowable<T>.replayingShare(): Flowable<T> = compose(ReplayingShare.instance<T>())
+@JvmOverloads
+fun <T> Flowable<T>.replayingShare(defaultValue: T? = null): Flowable<T> {
+  return compose(
+      if (defaultValue != null) ReplayingShare.createWithDefault(defaultValue)
+      else ReplayingShare.instance<T>()
+  )
+}

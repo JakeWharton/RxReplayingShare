@@ -16,7 +16,6 @@
 package com.jakewharton.rx;
 
 import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
@@ -257,5 +256,88 @@ public final class ReplayingShareObservableTest {
     testObserver.dispose();
     replayed.subscribe(testObserver);
     testObserver.assertNoValues();
+  }
+
+  @Test public void defaultValueOnSubscribe() {
+    PublishSubject<String> subject = PublishSubject.create();
+    Observable<String> observable = subject.compose(ReplayingShare.createWithDefault("default"));
+
+    TestObserver<String> observer1 = new TestObserver<>();
+    observable.subscribe(observer1);
+    observer1.assertValues("default");
+
+    subject.onNext("Foo");
+    observer1.assertValues("default", "Foo");
+  }
+
+  @Test public void defaultValueIsOverriddenByLatestEmissionForNewSubscriber() {
+    PublishSubject<String> subject = PublishSubject.create();
+    Observable<String> observable = subject.compose(ReplayingShare.createWithDefault("default"));
+
+    TestObserver<String> observer1 = new TestObserver<>();
+    observable.subscribe(observer1);
+    observer1.assertValues("default");
+
+    subject.onNext("Foo");
+    observer1.assertValues("default", "Foo");
+
+    TestObserver<String> observer2 = new TestObserver<>();
+    observable.subscribe(observer2);
+    observer2.assertValues("Foo");
+  }
+
+  @Test public void completeClearsCacheAndResubscribesStartingWithDefault() {
+    List<String> start = new ArrayList<>();
+    start.add("initA");
+
+    PublishSubject<String> upstream = PublishSubject.create();
+    Observable<String> replayed =
+        upstream.startWith(start).compose(ReplayingShare.createWithDefault("default"));
+
+    TestObserver<String> observer1 = new TestObserver<>();
+    replayed.subscribe(observer1);
+    observer1.assertValues("default", "initA");
+
+    TestObserver<String> observer2 = new TestObserver<>();
+    replayed.subscribe(observer2);
+    observer1.assertValues("default", "initA");
+
+    upstream.onComplete();
+    observer1.assertComplete();
+    observer2.assertComplete();
+
+    start.set(0, "initB");
+
+    TestObserver<String> observer3 = new TestObserver<>();
+    replayed.subscribe(observer3);
+    observer3.assertValues("default", "initB");
+  }
+
+  @Test public void errorClearsCacheAndResubscribesStartingWithDefault() {
+    List<String> start = new ArrayList<>();
+    start.add("initA");
+
+    PublishSubject<String> upstream = PublishSubject.create();
+    Observable<String> replayed =
+        upstream.startWith(start).compose(ReplayingShare.createWithDefault("default"));
+
+    TestObserver<String> observer1 = new TestObserver<>();
+    replayed.subscribe(observer1);
+    observer1.assertValues("default", "initA");
+
+    TestObserver<String> observer2 = new TestObserver<>();
+    replayed.subscribe(observer2);
+    observer1.assertValues("default", "initA");
+
+    RuntimeException r = new RuntimeException();
+    upstream.onError(r);
+    observer1.assertError(r);
+    observer2.assertError(r);
+
+    start.set(0, "initB");
+
+    TestObserver<String> observer3 = new TestObserver<>();
+    replayed.subscribe(observer3);
+    observer3.assertValues("default", "initB");
   }
 }
