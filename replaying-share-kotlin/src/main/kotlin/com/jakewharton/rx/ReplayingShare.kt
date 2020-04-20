@@ -15,8 +15,8 @@
  */
 package com.jakewharton.rx
 
-import io.reactivex.Flowable
-import io.reactivex.Observable
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Observable
 
 /**
  * A transformer which combines `replay(1)`, `publish()`, and `refCount()` operators.

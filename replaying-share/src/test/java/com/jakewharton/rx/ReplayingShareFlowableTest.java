@@ -15,17 +15,15 @@
  */
 package com.jakewharton.rx;
 
-import io.reactivex.Flowable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.functions.Action;
+import io.reactivex.rxjava3.functions.Consumer;
+import io.reactivex.rxjava3.processors.PublishProcessor;
+import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
-import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import static org.junit.Assert.assertEquals;
@@ -67,7 +65,7 @@ public final class ReplayingShareFlowableTest {
 
     subject.onNext("Foo");
     subscriber1.assertValues("Foo");
-    subscriber1.dispose();
+    subscriber1.cancel();
 
     TestSubscriber<String> subscriber2 = new TestSubscriber<>();
     flowable.subscribe(subscriber2);
@@ -81,7 +79,7 @@ public final class ReplayingShareFlowableTest {
     TestSubscriber<String> subscriber1 = new TestSubscriber<>();
     flowable.subscribe(subscriber1);
     subscriber1.assertNoValues();
-    subscriber1.dispose();
+    subscriber1.cancel();
 
     subject.onNext("Foo");
     subscriber1.assertNoValues();
@@ -129,22 +127,22 @@ public final class ReplayingShareFlowableTest {
         }) //
         .compose(ReplayingShare.<String>instance());
 
-    Disposable disposable1 = flowable.subscribeWith(new TestSubscriber<String>());
+    TestSubscriber<String> disposable1 = flowable.subscribeWith(new TestSubscriber<String>());
     assertEquals(1, count.get());
 
-    Disposable disposable2 = flowable.subscribeWith(new TestSubscriber<String>());
+    TestSubscriber<String> disposable2 = flowable.subscribeWith(new TestSubscriber<String>());
     assertEquals(1, count.get());
 
-    Disposable disposable3 = flowable.subscribeWith(new TestSubscriber<String>());
+    TestSubscriber<String> disposable3 = flowable.subscribeWith(new TestSubscriber<String>());
     assertEquals(1, count.get());
 
-    disposable1.dispose();
+    disposable1.cancel();
     assertEquals(1, count.get());
 
-    disposable3.dispose();
+    disposable3.cancel();
     assertEquals(1, count.get());
 
-    disposable2.dispose();
+    disposable2.cancel();
     assertEquals(0, count.get());
   }
 
@@ -198,7 +196,7 @@ public final class ReplayingShareFlowableTest {
     start.add("initA");
 
     PublishProcessor<String> upstream = PublishProcessor.create();
-    Flowable<String> replayed = upstream.startWith(start).compose(ReplayingShare.<String>instance());
+    Flowable<String> replayed = upstream.startWithIterable(start).compose(ReplayingShare.<String>instance());
 
     TestSubscriber<String> subscriber1 = new TestSubscriber<>();
     replayed.subscribe(subscriber1);
@@ -224,7 +222,7 @@ public final class ReplayingShareFlowableTest {
     start.add("initA");
 
     PublishProcessor<String> upstream = PublishProcessor.create();
-    Flowable<String> replayed = upstream.startWith(start).compose(ReplayingShare.<String>instance());
+    Flowable<String> replayed = upstream.startWithIterable(start).compose(ReplayingShare.<String>instance());
 
     TestSubscriber<String> subscriber1 = new TestSubscriber<>();
     replayed.subscribe(subscriber1);
@@ -292,7 +290,7 @@ public final class ReplayingShareFlowableTest {
 
     PublishProcessor<String> upstream = PublishProcessor.create();
     Flowable<String> replayed =
-        upstream.startWith(start).compose(ReplayingShare.createWithDefault("default"));
+        upstream.startWithIterable(start).compose(ReplayingShare.createWithDefault("default"));
 
     TestSubscriber<String> subscriber1 = new TestSubscriber<>();
     replayed.subscribe(subscriber1);
@@ -319,7 +317,7 @@ public final class ReplayingShareFlowableTest {
 
     PublishProcessor<String> upstream = PublishProcessor.create();
     Flowable<String> replayed =
-        upstream.startWith(start).compose(ReplayingShare.createWithDefault("default"));
+        upstream.startWithIterable(start).compose(ReplayingShare.createWithDefault("default"));
 
     TestSubscriber<String> subscriber1 = new TestSubscriber<>();
     replayed.subscribe(subscriber1);

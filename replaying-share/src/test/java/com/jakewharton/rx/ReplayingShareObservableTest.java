@@ -15,12 +15,12 @@
  */
 package com.jakewharton.rx;
 
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.observers.TestObserver;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Action;
+import io.reactivex.rxjava3.functions.Consumer;
+import io.reactivex.rxjava3.observers.TestObserver;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -200,7 +200,7 @@ public final class ReplayingShareObservableTest {
     start.add("initA");
 
     PublishSubject<String> upstream = PublishSubject.create();
-    Observable<String> replayed = upstream.startWith(start).compose(ReplayingShare.<String>instance());
+    Observable<String> replayed = upstream.startWithIterable(start).compose(ReplayingShare.<String>instance());
 
     TestObserver<String> observer1 = new TestObserver<>();
     replayed.subscribe(observer1);
@@ -226,7 +226,7 @@ public final class ReplayingShareObservableTest {
     start.add("initA");
 
     PublishSubject<String> upstream = PublishSubject.create();
-    Observable<String> replayed = upstream.startWith(start).compose(ReplayingShare.<String>instance());
+    Observable<String> replayed = upstream.startWithIterable(start).compose(ReplayingShare.<String>instance());
 
     TestObserver<String> observer1 = new TestObserver<>();
     replayed.subscribe(observer1);
@@ -294,7 +294,7 @@ public final class ReplayingShareObservableTest {
 
     PublishSubject<String> upstream = PublishSubject.create();
     Observable<String> replayed =
-        upstream.startWith(start).compose(ReplayingShare.createWithDefault("default"));
+        upstream.startWithIterable(start).compose(ReplayingShare.createWithDefault("default"));
 
     TestObserver<String> observer1 = new TestObserver<>();
     replayed.subscribe(observer1);
@@ -321,7 +321,7 @@ public final class ReplayingShareObservableTest {
 
     PublishSubject<String> upstream = PublishSubject.create();
     Observable<String> replayed =
-        upstream.startWith(start).compose(ReplayingShare.createWithDefault("default"));
+        upstream.startWithIterable(start).compose(ReplayingShare.createWithDefault("default"));
 
     TestObserver<String> observer1 = new TestObserver<>();
     replayed.subscribe(observer1);
