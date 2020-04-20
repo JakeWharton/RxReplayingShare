@@ -91,7 +91,7 @@
             <arg>-Xep:MissingFail:ERROR</arg>
             <arg>-Xep:NullAway:ERROR</arg>
             <arg>-XepOpt:NullAway:AssertsEnabled=true</arg>
-            <arg>-XepOpt:NullAway:AnnotatedPackages=com.jakewharton.rx</arg>
+            <arg>-XepOpt:NullAway:AnnotatedPackages=com.jakewharton.rx3</arg>
           </compilerArgs>
         </configuration>
         <dependencies>
