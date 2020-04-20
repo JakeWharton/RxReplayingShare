@@ -1,7 +1,7 @@
 RxJava Replaying Share
 ======================
 
-`ReplayingShare` is an RxJava 2 transformer which combines `replay(1)`, `publish()`, and
+`ReplayingShare` is an RxJava 3 transformer which combines `replay(1)`, `publish()`, and
 `refCount()` operators.
 
 Unlike traditional combinations of these operators, `ReplayingShare` caches the last emitted
@@ -40,14 +40,14 @@ Download
 Maven:
 ```xml
 <dependency>
-  <groupId>com.jakewharton.rx2</groupId>
+  <groupId>com.jakewharton.rx3</groupId>
   <artifactId>replaying-share</artifactId>
-  <version>2.2.0</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 Gradle:
 ```groovy
-compile 'com.jakewharton.rx2:replaying-share:2.2.0'
+compile 'com.jakewharton.rx3:replaying-share:3.0.0'
 ```
 
 If you use Kotlin, a package with an extension method for both `Observable` and `Flowable` is
