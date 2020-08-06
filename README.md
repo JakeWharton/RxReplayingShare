@@ -9,11 +9,14 @@ value from the upstream observable or flowable *only* when one or more downstrea
 connected. This allows expensive upstream sources to be shut down when no one is listening while
 also replaying the last value seen by *any* subscriber to new ones.
 
-|                                                                                  | replayingShare() | replay(1).refCount() | publish().refCount() |
-|----------------------------------------------------------------------------------|------------------|----------------------|----------------------|
-| Disconnects from upstream when there are no subscribers                          | ✅                | ✅                    | ✅                    |
-| Replays the latest value to new subscribers when other subscribers are active    | ✅                | ✅                    | ❌                    |
-| Replays the latest value to new subscribers when no other subscribers are active | ✅                | ❌                    | ❌                    |
+
+|                                                                                  | replayingShare() | replay(1).refCount() | publish().refCount() | replay(1).autoConnect(1) |
+|----------------------------------------------------------------------------------|------------------|----------------------|----------------------| -------------------------|
+| Disconnects from upstream when there are no subscribers                          | ✅               | ✅                   | ✅                   | ❌                       |
+| Replays the latest value to new subscribers when other subscribers are active    | ✅               | ✅                   | ❌                   | ✅                       |
+| Replays the latest value to new subscribers when no other subscribers are active | ✅               | ❌                   | ❌                   | ✅                       |
+
+
 
 ![marble diagram](marbles.png)
 
