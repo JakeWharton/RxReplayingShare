@@ -1,0 +1,6 @@
+rootProject.name = 'RxReplayingShare'
+
+include ':replaying-share'
+include ':replaying-share-kotlin'
+
+enableFeaturePreview('TYPESAFE_PROJECT_ACCESSORS')

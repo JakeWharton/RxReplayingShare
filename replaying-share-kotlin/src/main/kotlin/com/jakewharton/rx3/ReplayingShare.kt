@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.core.Observable
  * A null value means there will be no initial emission.
  */
 @JvmOverloads
-fun <T> Observable<T>.replayingShare(defaultValue: T? = null): Observable<T> {
+fun <T : Any> Observable<T>.replayingShare(defaultValue: T? = null): Observable<T> {
   return compose(
       if (defaultValue != null) ReplayingShare.createWithDefault(defaultValue)
       else ReplayingShare.instance<T>()
@@ -49,7 +49,7 @@ fun <T> Observable<T>.replayingShare(defaultValue: T? = null): Observable<T> {
  * A null value means there will be no initial emission.
  */
 @JvmOverloads
-fun <T> Flowable<T>.replayingShare(defaultValue: T? = null): Flowable<T> {
+fun <T : Any> Flowable<T>.replayingShare(defaultValue: T? = null): Flowable<T> {
   return compose(
       if (defaultValue != null) ReplayingShare.createWithDefault(defaultValue)
       else ReplayingShare.instance<T>()

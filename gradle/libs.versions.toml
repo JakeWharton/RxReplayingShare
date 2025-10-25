@@ -1,0 +1,7 @@
+[libraries]
+kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21"
+mavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.34.0"
+
+rxjava3 = "io.reactivex.rxjava3:rxjava:3.0.2"
+
+junit = "junit:junit:4.13.2"

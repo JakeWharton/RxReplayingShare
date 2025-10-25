@@ -1,0 +1,25 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath libs.kotlinPlugin
+    classpath libs.mavenPublishPlugin
+  }
+}
+
+allprojects {
+  repositories {
+    mavenCentral()
+  }
+
+  tasks.withType(JavaCompile).configureEach { task ->
+    task.sourceCompatibility = '1.8'
+    task.targetCompatibility = '1.8'
+  }
+  tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile).configureEach { task ->
+    task.kotlinOptions {
+      jvmTarget = '1.8'
+    }
+  }
+}

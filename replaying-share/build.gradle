@@ -1,0 +1,8 @@
+apply plugin: 'java-library'
+apply plugin: 'com.vanniktech.maven.publish'
+
+dependencies {
+  api libs.rxjava3
+
+  testImplementation libs.junit
+}
